@@ -2,6 +2,11 @@
 name = "ergo-names-resolution-cli"
 version = "0.0.2"
 edition = "2021"
+description = "A CLI tool for resolving ErgoName information."
+repository = "https://github.com/ergonames/ergo-names-resolution-cli"
+readme = "README.md"
+homepage = "https://ergonames.com/"
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
