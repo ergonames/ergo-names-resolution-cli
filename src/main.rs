@@ -1,8 +1,8 @@
-use clap::{Arg, Command};
+use clap::{Arg, ArgMatches, Command};
 use ergonames::{resolve_ergoname, get_block_id_registered, get_block_registered, get_timestamp_registered, get_date_registerd, reverse_search, get_total_amount_owned, Token};
 
 fn main() {
-    let cmds = Command::new("ergo-names-resolution-cli")
+    let cmds: ArgMatches = Command::new("ergo-names-resolution-cli")
         .version("0.0.2")
         .about("Resolves ErgoNames Information")
         .author("ErgoNames")
@@ -70,7 +70,6 @@ fn main() {
 
                 )
                 .get_matches();
-
 
     match cmds.subcommand() {
         Some(("resolve", subcmds)) => {
