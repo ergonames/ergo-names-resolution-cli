@@ -2,9 +2,9 @@ use clap::{Arg, Command};
 use ergonames::{resolve_ergoname, get_block_id_registered, get_block_registered, get_timestamp_registered, get_date_registerd, reverse_search};
 
 fn main() {
-    let cmds = Command::new("ergonames-cli")
+    let cmds = Command::new("ergo-names-resolution-cli")
         .version("0.0.1")
-        .about("Resolves ErgoNames")
+        .about("Resolves ErgoNames Information")
         .author("ErgoNames")
         .subcommand_required(true)
         .arg_required_else_help(true)
