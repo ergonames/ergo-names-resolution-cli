@@ -119,7 +119,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ergo-names-cli"
+name = "ergo-names-resolution-cli"
 version = "0.1.0"
 dependencies = [
  "clap",
