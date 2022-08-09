@@ -1,9 +1,9 @@
 use clap::{Arg, Command};
-use ergonames::{resolve_ergoname, get_block_id_registered, get_block_registered, get_timestamp_registered, get_date_registerd, reverse_search};
+use ergonames::{resolve_ergoname, get_block_id_registered, get_block_registered, get_timestamp_registered, get_date_registerd, reverse_search, get_total_amount_owned, Token};
 
 fn main() {
     let cmds = Command::new("ergo-names-resolution-cli")
-        .version("0.0.1")
+        .version("0.0.2")
         .about("Resolves ErgoNames Information")
         .author("ErgoNames")
         .subcommand_required(true)
@@ -13,169 +13,127 @@ fn main() {
                 .short_flag('r')
                 .long_flag("resolve")
                 .about("Resolves ErgoNames and addresses")
-                .arg(
-                    Arg::new("name")
-                        .short('n')
-                        .long("name")
-                        .takes_value(true)
-                        .conflicts_with_all(&[
-                            "blockid",
-                            "blocknumber",
-                            "timestamp",
-                            "date",
-                            "address"
-                        ])
+                .subcommand(
+                    Command::new("name")
+                        .short_flag('n')
+                        .long_flag("name")
+                        .about("Resolves ErgoNames")
+                        .arg(Arg::with_name("owner")
+                            .short('o')
+                            .long("owner")
+                            .takes_value(true)
+                            .help("Get the owner address of the ErgoName")
+                        )
+                        .arg(Arg::with_name("blockid")
+                            .short('i')
+                            .long("blockid")
+                            .takes_value(true)
+                            .help("Get the block id that the ErgoName was registered at")
+                        )
+                        .arg(Arg::with_name("blocknumber")
+                            .short('n')
+                            .long("blocknumber")
+                            .takes_value(true)
+                            .help("Get the block number that the ErgoName was registered at")
+                        )
+                        .arg(Arg::with_name("timestamp")
+                            .short('t')
+                            .long("timestamp")
+                            .takes_value(true)
+                            .help("Get the timestamp that the ErgoName was registered at")
+                        )
+                        .arg(Arg::with_name("date")
+                            .short('d')
+                            .long("date")
+                            .takes_value(true)
+                            .help("Get the date that the ErgoName was registered at")
+                        )
+                    )
+                    .subcommand(
+                        Command::new("address")
+                            .short_flag('a')
+                            .long_flag("address")
+                            .about("Resolves addresses")
+                            .arg(Arg::with_name("owned")
+                                .short('O')
+                                .long("owned")
+                                .takes_value(true)
+                                .help("Get all the ErgoNames that are owned by the address")
+                            )
+                            .arg(Arg::with_name("amount")
+                                .short('a')
+                                .long("amount")
+                                .takes_value(true)
+                                .help("Get the amount of ErgoNames that are registered at the address")
+                            )
+                    )
+
                 )
-                .arg(
-                    Arg::new("blockid")
-                        .short('i')
-                        .long("blockid")
-                        .takes_value(true)
-                        .conflicts_with_all(&[
-                            "name",
-                            "blocknumber",
-                            "timestamp",
-                            "date",
-                            "address"
-                        ])
-                )
-                .arg(
-                    Arg::new("blocknumber")
-                        .short('N')
-                        .long("blocknumber")
-                        .takes_value(true)
-                        .conflicts_with_all(&[
-                            "name",
-                            "blockid",
-                            "timestamp",
-                            "date",
-                            "address",
-                        ])
-                )
-                .arg(
-                    Arg::new("timestamp")
-                        .short('t')
-                        .long("timestamp")
-                        .takes_value(true)
-                        .conflicts_with_all(&[
-                            "name",
-                            "blockid",
-                            "blocknumber",
-                            "date",
-                            "address",
-                        ])
-                )
-                .arg(
-                    Arg::new("date")
-                        .short('d')
-                        .long("date")
-                        .takes_value(true)
-                        .conflicts_with_all(&[
-                            "name",
-                            "blockid",
-                            "blocknumber",
-                            "timestamp",
-                            "address",
-                        ])
-                )
-                .arg(
-                    Arg::new("address")
-                        .short('a')
-                        .long("address")
-                        .takes_value(true)
-                        .conflicts_with_all(&[
-                            "name",
-                            "blockid",
-                            "blocknumber",
-                            "timestamp",
-                            "date"
-                        ])
-                ),
-        )
-        .get_matches();
+                .get_matches();
 
 
     match cmds.subcommand() {
-        Some(("resolve", resolve_mathces)) => {
-            let name: Option<&str> = resolve_mathces.value_of("name");
-            let blockid: Option<&str> = resolve_mathces.value_of("blockid");
-            let blocknumber: Option<&str> = resolve_mathces.value_of("blocknumber");
-            let timestamp: Option<&str> = resolve_mathces.value_of("timestamp");
-            let date: Option<&str> = resolve_mathces.value_of("date");
-            let address: Option<&str> = resolve_mathces.value_of("address");
-            if name.is_some() {
-                let name: &str = name.unwrap();
-                let reformated_name: String = format!("~{}", name);
-                let name: &str = &reformated_name.as_str().to_owned();
-                let resolved_ergoname: Option<String> = resolve_ergoname(name, None);
-                if resolved_ergoname.is_none() {
-                    println!("No ErgoName was found for {}", name);
+        Some(("resolve", subcmds)) => {
+            match subcmds.subcommand() {
+                Some(("name", name_subcmds)) => {
+                    let owner: Option<&str> = name_subcmds.value_of("owner");
+                    let blockid: Option<&str> = name_subcmds.value_of("blockid");
+                    let blocknumber: Option<&str> = name_subcmds.value_of("blocknumber");
+                    let timestamp: Option<&str> = name_subcmds.value_of("timestamp");
+                    let date: Option<&str> = name_subcmds.value_of("date");
+                    if owner.is_some() {
+                        let owner: &str = owner.unwrap();
+                        let reformated: String = format!("~{}", owner);
+                        let owner: &str = reformated.as_str();
+                        let resolved: String = resolve_ergoname(owner, None).unwrap();
+                        println!("{}", resolved);
+                    } else if blockid.is_some() {
+                        let blockid: &str = blockid.unwrap();
+                        let reformated: String = format!("~{}", blockid);
+                        let blockid: &str = reformated.as_str();
+                        let resolved: String = get_block_id_registered(blockid, None).unwrap();
+                        println!("{}", resolved);
+                    } else if blocknumber.is_some() {
+                        let blocknumber: &str = blocknumber.unwrap();
+                        let reformated: String = format!("~{}", blocknumber);
+                        let blocknumber: &str = reformated.as_str();
+                        let resolved: i32 = get_block_registered(blocknumber, None).unwrap();
+                        println!("{}", resolved);
+                    } else if timestamp.is_some() {
+                        let timestamp: &str = timestamp.unwrap();
+                        let reformated: String = format!("~{}", timestamp);
+                        let timestamp: &str = reformated.as_str();
+                        let resolved: u64 = get_timestamp_registered(timestamp, None).unwrap();
+                        println!("{}", resolved);
+                    } else if date.is_some() {
+                        let date: &str = date.unwrap();
+                        let reformated: String = format!("~{}", date);
+                        let date: &str = reformated.as_str();
+                        let resolved: String = get_date_registerd(date, None).unwrap();
+                        println!("{}", resolved);
+                    }
                 }
-                else {
-                    println!("{}", resolved_ergoname.unwrap());
+                Some(("address", address_subcmds)) => {
+                    let address: Option<&str> = address_subcmds.value_of("owned");
+                    let amount: Option<&str> = address_subcmds.value_of("amount");
+                    if address.is_some() {
+                        let address: &str = address.unwrap();
+                        let resolved: Vec<Token> = reverse_search(address, None).unwrap();
+                        println!("{:?}", resolved);
+                    }
+                    if amount.is_some() {
+                        let amount: &str = amount.unwrap();
+                        let resolved: u32 = get_total_amount_owned(amount, None).unwrap();
+                        println!("{}", resolved);
+                    }
                 }
-            }
-            else if blockid.is_some() {
-                let name: &str = blockid.unwrap();
-                let reformated_name: String = format!("~{}", name);
-                let name: &str = &reformated_name.as_str().to_owned();
-                let blockid_registered: Option<String> = get_block_id_registered(name, None);
-                if blockid_registered.is_none() {
-                    println!("No ErgoName was found for {}", name);
-                }
-                else {
-                    println!("{}", blockid_registered.unwrap());
-                }
-            }
-            else if blocknumber.is_some() {
-                let name: &str = blocknumber.unwrap();
-                let reformated_name: String = format!("~{}", name);
-                let blocknumber: &str = &reformated_name.as_str().to_owned();
-                let blocknumber_registered: Option<i32> = get_block_registered(blocknumber, None);
-                if blocknumber_registered.is_none() {
-                    println!("No ErgoName was found for {}", blocknumber);
-                }
-                else {
-                    println!("{}", blocknumber_registered.unwrap());
-                }
-            }
-            else if timestamp.is_some() {
-                let name: &str = timestamp.unwrap();
-                let reformated_name: String = format!("~{}", name);
-                let timestamp: &str = &reformated_name.as_str().to_owned();
-                let timestamp_registered: Option<u64> = get_timestamp_registered(timestamp, None);
-                if timestamp_registered.is_none() {
-                    println!("No ErgoName was found for {}", timestamp);
-                }
-                else {
-                    println!("{}", timestamp_registered.unwrap());
-                }
-            }
-            else if date.is_some() {
-                let name: &str = date.unwrap();
-                let reformated_name: String = format!("~{}", name);
-                let date: &str = &reformated_name.as_str().to_owned();
-                let date_registered: Option<String> = get_date_registerd(date, None);
-                if date_registered.is_none() {
-                    println!("No ErgoName was found for {}", date);
-                }
-                else {
-                    println!("{}", date_registered.unwrap());
-                }
-            }
-            if address.is_some() {
-                let address: &str = address.unwrap();
-                let owned_tokens: Option<Vec<ergonames::Token>> = reverse_search(address, None);
-                if owned_tokens.is_none() {
-                    println!("No owned tokens found for {}", address);
-                }
-                else {
-                    println!("{:?}", owned_tokens.unwrap());
+                _ => {
+                    println!("No subcommand given");
                 }
             }
         }
         _ => {
-            println!("No valid subcommand provided");
+            println!("No command given");
         }
     }
 }
