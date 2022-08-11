@@ -128,9 +128,9 @@ dependencies = [
 
 [[package]]
 name = "ergonames"
-version = "0.4.5"
+version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4092e19440fd7777238e22ae4679c4e763c41780ff1bde4027ead463788b390b"
+checksum = "d213920aaf9afbc2d5724f451916be83e26a63ac336ba8e570b144b4096f67bc"
 dependencies = [
  "chrono",
  "reqwest",
